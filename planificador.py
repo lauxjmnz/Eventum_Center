@@ -167,7 +167,7 @@ def ver_agenda_recursos():
 
                 encontrado=False
                 for e in eventos:
-                    if e['recurso']==recurso_elegido:
+                    if recurso_elegido in e['recursos']:
                         encontrado=True
                         print(f"Evento: {e['nombre']}")
                         if e['fecha']==e['fecha_fin']:
@@ -178,7 +178,7 @@ def ver_agenda_recursos():
                     
 
                 if not encontrado:
-                    print(f"No hay eventos programados para{recurso_elegido}")
+                    print(f"No hay eventos programados para {recurso_elegido}")
 
             else:
                 print("Numero fuera del rango")
