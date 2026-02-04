@@ -7,15 +7,21 @@ eventos=[]
 def leer_datos():
     global eventos
     try:
-        with open("data.json","r",encoding="utf-8")as archivo:
-            datos=json.load(archivo)
-            eventos=datos["eventos"]
+        with open("data.json","r",encoding="utf-8")as archivo:            
+            contenido=archivo.read().strip()
+            if not contenido:
+                eventos=[]
+                return
+            datos=json.loads(contenido)
+            if isinstance(datos,dict):
+                eventos=datos.get("eventos", [])
+            else:
+                print("Aviso:El formato del archivo data.json no es valido .Se iniciara vacio")
+                eventos =[]
     except FileNotFoundError:
         eventos=[]
     except json.JSONDecodeError:
         eventos=[]
-
-
 
 
 #guardar datos
@@ -28,6 +34,9 @@ def guardar_eventos():
 def pedir_fecha():
     while True:
         fecha_texto=input("introduzca fecha en el formato(DD/MM/AAAA)")
+        if not fecha_texto:
+            print("La fecha no puede estar vacia")
+            continue
         try:
             fecha=datetime.strptime(fecha_texto, "%d/%m/%Y")
             hoy= datetime.now()
@@ -115,12 +124,14 @@ def pedir_recurso():
     return seleccionados
 
 def horas_solapadas(fecha1_i,fecha1_f,inicio1,fin1,fecha2_i,fecha2_f,inicio2,fin2):
-    i1=datetime.strptime(f"{fecha1_i} {inicio1}", "%d/%m/%Y  %H:%M")
-    f1=datetime.strptime(f"{fecha1_f} {fin1}","%d/%m/%Y %H:%M")
-    i2=datetime.strptime(f"{fecha2_i} {inicio2}","%d/%m/%Y  %H:%M")
-    f2=datetime.strptime(f"{fecha2_f} {fin2}","%d/%m/%Y  %H:%M")
-
-    return i1<f2 and i2<f1
+    try:
+        i1=datetime.strptime(f"{fecha1_i} {inicio1}", "%d/%m/%Y %H:%M")
+        f1=datetime.strptime(f"{fecha1_f} {fin1}","%d/%m/%Y %H:%M")
+        i2=datetime.strptime(f"{fecha2_i} {inicio2}","%d/%m/%Y %H:%M")
+        f2=datetime.strptime(f"{fecha2_f} {fin2}","%d/%m/%Y %H:%M")
+        return i1<f2 and i2<f1
+    except ValueError:
+        return False
 
 def recursos_ocupados(evento_nuevo,indice_actual=None):
     ocupados=set()
@@ -130,9 +141,9 @@ def recursos_ocupados(evento_nuevo,indice_actual=None):
 
         recursos_comunes=set(evento["recursos"]) & set(evento_nuevo["recursos"])
         if recursos_comunes:
-            if horas_solapadas(evento["fecha_inicio"],evento["fecha_fin"],evento["hora_inicio"],evento["hora_fin"],evento_nuevo["fecha_inicio"],evento_nuevo["fecha_fin"],evento_nuevo["hora_inicio"],evento_nuevo["hora_fin"]):
+            if horas_solapadas(evento["fecha"],evento["fecha_fin"],evento["hora_inicio"],evento["hora_fin"],evento_nuevo["fecha"],evento_nuevo["fecha_fin"],evento_nuevo["hora_inicio"],evento_nuevo["hora_fin"]):
                ocupados.update(recursos_comunes)
-        return list(ocupados) 
+    return list(ocupados) 
 
 def ver_agenda_recursos():
     if not eventos:
@@ -156,11 +167,15 @@ def ver_agenda_recursos():
 
                 encontrado=False
                 for e in eventos:
-                    if recurso_elegido in e['recursos']:
-                        print(f"Evento: {e['nombre']}")
-                        print(f"Dia:{e['fecha']}  de {e['hora_inicio']} al {e['fecha_fin']} a las {e['hora_fin']}")
-
+                    if e['recurso']==recurso_elegido:
                         encontrado=True
+                        print(f"Evento: {e['nombre']}")
+                        if e['fecha']==e['fecha_fin']:
+                            print(f"Dia: {e['fecha']} de {e['hora_inicio']} a {e['hora_fin']}")
+                        else:
+                            print(f"Desde:{e['fecha']} de {e['hora_inicio']} hasta {e['fecha_fin']} {e['hora_fin']}")
+                
+                    
 
                 if not encontrado:
                     print(f"No hay eventos programados para{recurso_elegido}")
@@ -168,35 +183,38 @@ def ver_agenda_recursos():
             else:
                 print("Numero fuera del rango")
 
-                    
         except ValueError:
             print("Debe introducir un numero ")
             
 
 def buscar_huecos(evento_fallido):
-    print("Buscando un espacio libre para estos recursos")
-    inicio_dt=datetime.strptime(f"{evento_fallido['fecha']}{evento_fallido['hora_inicio']}", "%d/%m/%Y  %H:%M")
-    fin_dt=datetime.strptime(f"{evento_fallido['fecha_fin']}{evento_fallido['hora_fin']}", "%d/%m/%Y  %H:%M")
-    duracion=fin_dt-inicio_dt
+    print("Buscando un espacio libre para estos recursos...")
+    try:
+        inicio_dt=datetime.strptime(f"{evento_fallido['fecha']} {evento_fallido['hora_inicio']}", "%d/%m/%Y %H:%M")
+        fin_dt=datetime.strptime(f"{evento_fallido['fecha_fin']} {evento_fallido['hora_fin']}", "%d/%m/%Y %H:%M")
+        duracion=fin_dt-inicio_dt
 
-    for i in range(96):
-        inicio_dt+=timedelta(minutes=30)
-        nuevo_fin_dt=inicio_dt+duracion
+        for i in range(96):
+            inicio_dt+=timedelta(minutes=30)
+            nuevo_fin_dt=inicio_dt+duracion
 
-        if 0<=inicio_dt<7:
-            continue
+            if inicio_dt.hour<7 or inicio_dt.hour>22:
+                continue
 
-        evento_prueba=evento_fallido.copy()
-        evento_prueba['fecha']=inicio_dt.strftime("%d/%m/%Y")
-        evento_prueba['hora_inicio']=inicio_dt.strftime("%d/%m/%Y")
-        evento_prueba['fecha_fin']=nuevo_fin_dt.strftime9("%d/%m/%Y")
-        evento_fallido['hora_fin']=nuevo_fin_dt.strftime9("%d/%m/%Y")
+            evento_prueba=evento_fallido.copy()
+            evento_prueba['fecha']=inicio_dt.strftime("%d/%m/%Y")
+            evento_prueba['hora_inicio']=inicio_dt.strftime("%H:%M")
+            evento_prueba['fecha_fin']=nuevo_fin_dt.strftime("%d/%m/%Y")
+            evento_prueba['hora_fin']=nuevo_fin_dt.strftime("%H:%M")
 
-        if not recursos_ocupados(evento_prueba):
-            print("Encontramos un hueco.Podrias mover el evento al:")
-            print(f"{evento_prueba['fecha']} de {evento_prueba['hora_inicio']} al {evento_prueba['hora_fin']}")
-            return
-    print("No se encontro ningun hueco libre en las proximas 48 horas")
+            if not recursos_ocupados(evento_prueba):
+                print("Encontramos un hueco.Podrias mover el evento al:")
+                print(f"{evento_prueba['fecha']} de {evento_prueba['hora_inicio']} al {evento_prueba['hora_fin']}")
+                return
+        print("No se encontro ningun hueco libre en las proximas 48 horas")
+    except Exception as e:
+        print(f"Error tecnico en la busqueda de {e}")
+
           
 def crear_evento():
     nombre=input("Introduzca el nombre del evento, por favor")
@@ -216,7 +234,19 @@ def crear_evento():
         break
 
     recursos =pedir_recurso()
-    
+     
+    if not recursos:
+        print("Atencion no has seleccionado ningun recurso")
+        while True: 
+            confirmar=input("Desea crear este evento solo como una anotacion en la agenda (si/no)").lower().strip()
+            if confirmar=="si":
+                break
+            elif confirmar=="no":
+                print("Operacion cancelada.El evento no ha sido guardado")
+                return
+            else:
+                print("Por favor responda con 'si' o 'no' ")
+            
     evento={
         "nombre":nombre,
         "fecha":fecha,
@@ -255,7 +285,7 @@ def mostrar_evento():
         for i,evento in enumerate(eventos,start=1):
             print(f"\n {i} {evento['nombre']}")
             if evento['fecha'] !=evento["fecha_fin"]:
-                print(f"fecha:{evento['fecha']} al {evento['fecha_f']}")
+                print(f"fecha:{evento['fecha']} al {evento['fecha_fin']}")
             else:
                 print(f"fecha:{evento['fecha']}")
 
@@ -275,8 +305,8 @@ def editar_evento():
     else:
         print("Eventos disponibles")                         #mostrar eventos
         for i,evento in enumerate(eventos,start=1):          
-            print(f"{i}. {evento['nombre']} {evento["fecha"]} {evento["hora_inicio"]}-{evento["hora_fin"]}")
-                                                     
+            print(f"{i}. {evento['nombre']} {evento["fecha"]} {evento["hora_inicio"]}- {evento['fecha_fin']}{evento["hora_fin"]}")
+                         
         try:                                                  #elegir evento
             opcion=int(input("elija el numero del evento a editar"))-1
             if opcion<0 or opcion>=len(eventos):
@@ -305,7 +335,24 @@ def editar_evento():
                 else:
                     print("El nombre no puede estar vacio")
             elif indice=="2":
-                evento_elegido["fecha"]=pedir_fecha()
+                nueva_fecha=pedir_fecha()
+                evento_prueba=evento_elegido.copy()
+                evento_prueba["fecha"]=nueva_fecha
+
+                if comprobar_madrugada(evento_prueba["hora_inicio"],evento_prueba["hora_fin"]):
+                    obj_fecha=datetime.strptime(nueva_fecha, "%d/%m/%Y")
+                    evento_prueba["fecha_fin"]=(obj_fecha +timedelta(days=1)).strftime("%d/%m/%Y")
+                else:
+                    evento_prueba["fecha_fin"]=nueva_fecha
+                ocupados=recursos_ocupados(evento_prueba,opcion)
+                if ocupados:
+                    print("No se puede cambiar la fecha.Recursos ocupados:")
+                    for r in ocupados:
+                        print("-", r)
+                    continue
+                evento_elegido["fecha"]=evento_prueba["fecha"]
+                evento_elegido["fecha_fin"]=evento_prueba["fecha_fin"]
+                print("Fecha actualizada correctamente")
             elif indice=="3":
                 print("Introduzca a continuacion la hora de inicio:")
                 nueva_inicio=pedir_hora()
@@ -378,15 +425,15 @@ def editar_evento():
                                 continue
 
                             evento_prueba=evento_elegido.copy()
-                            evento_prueba["recursos"]=evento_elegido["recursos"]+ recursos
+                            evento_prueba["recursos"]=list(evento_elegido["recursos"])+ recursos
 
-                            ocupados=recursos_ocupados(evento_prueba)
+                            ocupados=recursos_ocupados(evento_prueba,opcion)
                             if ocupados:
                                 print("No se pueden agregar los recursos")
                                 print("Recursos ocupados en ese horario:")
                                 for r in ocupados:
                                     print("-", r)
-                            
+                                continue
                             else:
                                 evento_elegido["recursos"].extend(recursos)
                                 evento_elegido["recursos"]=list(set(evento_elegido["recursos"]))  #eliminar duplicados
@@ -429,27 +476,14 @@ def editar_evento():
                         print("Opcion no valida")
 
             elif indice=="5":
+                guardar_eventos()
+                print("Su evento se ha editado correctamente")
                 break
 
             else:
                 print("Opcion no valida")
-
-            #Conflictos entre recursos(hora solapadas y recursos ocupados)
-            eventos.pop(opcion)    #para evitar que se compare con el mismo
-            ocupados=recursos_ocupados(evento_elegido,opcion)
-            eventos.insert(opcion,evento_elegido)
-
-            if ocupados:
-                 print("No se puede editar el evento")
-                 print("Recursos ocupados en ese horario:")
-                 for r in ocupados:
-                    print("-", r)
-                    return
         
-            guardar_eventos()
-            print("Su evento se ha editado correctamente")
             
-
 def eliminar_evento():
     if not eventos:
         print("no hay eventos para poder eliminar")
