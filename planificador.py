@@ -4,6 +4,13 @@ from datetime import datetime,timedelta
 
 eventos=[]
 #leer datos
+def pedir_nombre():
+    while True:
+        nombre=input("Introduzca el nombre del evento:").strip()
+        if not nombre:
+            print("Error:El nombre no puede estar vacio ")
+            continue
+        return nombre
 def leer_datos():
     global eventos
     try:
@@ -22,6 +29,7 @@ def leer_datos():
         eventos=[]
     except json.JSONDecodeError:
         eventos=[]
+        guardar_eventos()
 
 
 #guardar datos
@@ -59,6 +67,10 @@ def pedir_hora():
 def comprobar_madrugada(hora_inicio,hora_fin):
     inicio=datetime.strptime(hora_inicio, "%H:%M")
     fin=datetime.strptime(hora_fin, "%H:%M")
+
+    if inicio==fin:
+        print("Aviso :Ha introducido la misma hora de inicio y de fin")
+        print("Esto creara un evento de 24 horas  ")
     return fin<=inicio
     
 def obtener_recurso(nombre):
@@ -198,9 +210,6 @@ def buscar_huecos(evento_fallido):
             inicio_dt+=timedelta(minutes=30)
             nuevo_fin_dt=inicio_dt+duracion
 
-            if inicio_dt.hour<7 or inicio_dt.hour>22:
-                continue
-
             evento_prueba=evento_fallido.copy()
             evento_prueba['fecha']=inicio_dt.strftime("%d/%m/%Y")
             evento_prueba['hora_inicio']=inicio_dt.strftime("%H:%M")
@@ -217,7 +226,7 @@ def buscar_huecos(evento_fallido):
 
           
 def crear_evento():
-    nombre=input("Introduzca el nombre del evento, por favor")
+    nombre=pedir_nombre()
     fecha=pedir_fecha()
 
     while True:
@@ -305,7 +314,7 @@ def editar_evento():
     else:
         print("Eventos disponibles")                         #mostrar eventos
         for i,evento in enumerate(eventos,start=1):          
-            print(f"{i}. {evento['nombre']} {evento["fecha"]} {evento["hora_inicio"]}- {evento['fecha_fin']}{evento["hora_fin"]}")
+            print(f"{i}. {evento['nombre']} {evento['fecha']} {evento['hora_inicio']}- {evento['fecha_fin']}{evento['hora_fin']}")
                          
         try:                                                  #elegir evento
             opcion=int(input("elija el numero del evento a editar"))-1
@@ -328,7 +337,7 @@ def editar_evento():
             
             indice=input("Seleccione una opcion")
             if indice=="1":
-                nuevo_nombre=input("Introduzca el nuevo nombre del evento:").strip()
+                nuevo_nombre=pedir_nombre()
                 if nuevo_nombre:
                     evento_elegido["nombre"]=nuevo_nombre
                     print("Nombre actualizado")
