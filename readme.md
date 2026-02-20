@@ -39,7 +39,7 @@ Esta funcionalidad previene conflictos espaciales o técnicos insalvables. Se ha
 
 Durante el ciclo de desarrollo, se identificaron y resolvieron puntos críticos de fallo para asegurar la robustez del software:
  - Detección de Colisiones Multidía: La comparación inicial de horas resultaba insuficiente para eventos que atravesaban la medianoche (madrugada). Se implementó una lógica que detecta cuando la hora_fin es menor o igual a la hora_inicio, calculando automáticamente un salto de fecha para el cierre del evento y validando la disponibilidad en ambos días.
- - Buscador Automático de Disponibilidad: Ante un choque de horarios, se desarrolló una función iterativa que analiza los próximos dos días en intervalos de 30 minutos. Este algoritmo filtra los resultados para sugerir espacios únicamente dentro del horario laboral establecido (07:00 a 22:00), optimizando la respuesta al usuario.
+ - Buscador Automático de Disponibilidad: Ante un choque de horarios, se desarrolló una función iterativa que analiza los próximos dos días en intervalos de 30 minutos para hacer sugerencias al usuario para que pueda crear el evento con exito.
 
  -Integridad de la Persistencia: Se enfrentó el riesgo de corrupción de datos al leer el archivo data.json. Se implementaron manejadores de excepciones (JSONDecodeError y FileNotFoundError) para asegurar que el programa inicie de manera segura incluso si el archivo de datos falta o está dañado.
 
