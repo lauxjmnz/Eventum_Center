@@ -17,6 +17,7 @@ Para garantizar la integridad del sistema, se ha optado por una arquitectura mod
 
 Arquitectura de Archivos:
  -main.py: Funciona como el orquestador principal, gestionando el menú de usuario y derivando las peticiones a los módulos correspondientes.
+ -evento.py:define la clase Evento,que encapsula la informacion de cada actividad (nombre,fechas,horas y recursos)y provee los metodos logicos para la gestion de intervalos de tiempo y la deteccion de colisiones.
  - planificador.py: Contiene el motor de cálculo del sistema. Aquí se procesan las colisiones de horario, la búsqueda automática de disponibilidad y la persistencia de datos en formato JSON.
  - recursos.py: Define el ecosistema de activos. Utiliza una estructura de diccionarios para establecer las capacidades y limitaciones de cada recurso.
 
