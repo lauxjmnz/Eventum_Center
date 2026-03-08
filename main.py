@@ -1,7 +1,8 @@
-import planificador
+from planificador import Planificador
+planificador=Planificador()
 
 print("Bienvenido a su organizador de eventos")
-planificador.leer_datos()
+
  
 def mostrar_menu():
     print("Menu")

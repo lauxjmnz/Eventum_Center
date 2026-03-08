@@ -2,7 +2,7 @@ RECURSOS_DISPONIBLES = [
     {
         "nombre":"Sala Central",
         "requiere":[],
-        "excluye":["Sala pequeña","Area abierta"]
+        "excluye":["Sala pequeña","Area Abierta"]
     },
     {
         "nombre":"Sala pequeña",
@@ -15,7 +15,7 @@ RECURSOS_DISPONIBLES = [
         "excluye":["Sala Central","Sala pequeña"]
     },
     {
-        "nombre":"Sistema de sonido",
+        "nombre":"Sistema de Sonido",
         "requiere":["Sala Central"],
         "excluye":[]
     },

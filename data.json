@@ -1,3 +1,16 @@
 {
-    "eventos": []
+    "eventos": [
+        {
+            "nombre": "Ls",
+            "fecha": "12/03/2026",
+            "fecha_fin": "12/03/2026",
+            "hora_inicio": "12:00",
+            "hora_fin": "13:00",
+            "recursos": [
+                "Sala Central",
+                "Sistema de Sonido",
+                "Tecnico de Sonido"
+            ]
+        }
+    ]
 }
