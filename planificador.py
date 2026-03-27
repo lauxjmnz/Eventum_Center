@@ -426,12 +426,13 @@ class Planificador:
 
                     if evento_elegido.recursos:
                         if opcion2>=1 and opcion2<=len(evento_elegido.recursos):             #eliminar recursos si  hay
-                            recursos_temp=list(evento_elegido.recursos)
-                            r_eliminado=recursos_temp(opcion2 -1)
+                            recursos_temp=evento_elegido.recursos.copy()
+                            r_eliminado=recursos_temp.pop(opcion2 -1)
                             if not self.validar_requiere(recursos_temp):
                                 print("Opcion denegada .No puedes eliminar {r_eliminado} porque otro recurso depende de el")
                             else:
                                 evento_elegido.recursos=recursos_temp
+                                self.guardar_eventos()
                                 print(f"El recurso {r_eliminado} fue eliminado correctamente")
                 
                 
