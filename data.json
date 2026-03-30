@@ -1,15 +1,15 @@
 {
     "eventos": [
         {
-            "nombre": "Ls",
-            "fecha": "12/03/2026",
-            "fecha_fin": "12/03/2026",
-            "hora_inicio": "12:00",
-            "hora_fin": "13:00",
+            "nombre": "Laluke",
+            "fecha": "23/03/2026",
+            "fecha_fin": "23/03/2026",
+            "hora_inicio": "14:00",
+            "hora_fin": "16:00",
             "recursos": [
-                "Sala Central",
+                "Pizarra",
                 "Sistema de Sonido",
-                "Tecnico de Sonido"
+                "Sala Central"
             ]
         }
     ]
