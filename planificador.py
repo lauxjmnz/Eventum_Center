@@ -147,6 +147,31 @@ class Planificador:
                 if evento.horas_solapadas(evento_nuevo):
                    ocupados.update(recursos_comunes)
         return list(ocupados) 
+    
+    def agregar_recursos_a_evento(self,evento, indice_evento):
+        recursos_nuevos=self.pedir_recurso()
+        if not recursos_nuevos:
+            print("No se selecciono ningun recurso nuevo.")
+            return False
+        
+        recursos_combinados=list(evento.recursos) + recursos_nuevos
+        if not self.validar_requiere(recursos_combinados):
+            return False
+        if not self.validar_excluye(recursos_combinados):
+            return False
+        
+        evento_prueba = evento.copy()
+        evento_prueba.recursos= recursos_combinados
+
+        ocupados=self.recursos_ocupados( evento_prueba , indice_evento)
+        if ocupados:
+            print("No se pueden agregar los recursos.Recursos ocupados en ese horario:")
+            for r in ocupados:
+                print ("-", r)
+            return False
+        evento.recursos=list(dict.fromkeys(recursos_combinados))
+        print("Recursos agregados correctamente")
+        return True
 
     def ver_agenda_recursos(self):
         if not self.eventos:
@@ -429,7 +454,7 @@ class Planificador:
                             recursos_temp=evento_elegido.recursos.copy()
                             r_eliminado=recursos_temp.pop(opcion2 -1)
                             if not self.validar_requiere(recursos_temp):
-                                print("Opcion denegada .No puedes eliminar {r_eliminado} porque otro recurso depende de el")
+                                print(f"Opcion denegada .No puedes eliminar {r_eliminado} porque otro recurso depende de el")
                             else:
                                 evento_elegido.recursos=recursos_temp
                                 self.guardar_eventos()
@@ -437,30 +462,7 @@ class Planificador:
                 
                 
                         elif opcion2==len(evento_elegido.recursos)+1:                #agregar recursos
-                            recursos_nuevos=self.pedir_recurso()
-                            
-                            if recursos_nuevos:
-                                recursos_combinados=list(evento_elegido.recursos)+ recursos_nuevos
-                            if recursos_nuevos:
-                                if not self.validar_requiere(recursos_combinados):
-                                    continue
-                                if not self.validar_excluye(recursos_combinados):
-                                    continue
-
-                                evento_prueba=evento_elegido.copy()
-                                evento_prueba.recursos=recursos_combinados
-
-                                ocupados=self.recursos_ocupados(evento_prueba,opcion)
-                                if ocupados:
-                                    print("No se pueden agregar los recursos")
-                                    print("Recursos ocupados en ese horario:")
-                                    for r in ocupados:
-                                        print("-", r)
-                                    continue
-                                else:
-                                    evento_elegido.recursos.extend(recursos_nuevos)
-                                    evento_elegido.recursos=list(set(evento_elegido.recursos))  #eliminar duplicados
-                                    print("Recursos agregados correctamente")
+                            self.agregar_recursos_a_evento(evento_elegido, opcion)
 
                         elif opcion2==len(evento_elegido.recursos)+2:                #volver
                            continue
@@ -469,30 +471,7 @@ class Planificador:
                             print("Opcion no valida")
                     else:
                         if opcion2==opcion_agregar:
-                            recursos_nuevos=self.pedir_recurso()
-
-                            if recursos_nuevos:
-                                if not self.validar_requiere(recursos_nuevos):
-                                    continue
-                                if not self.validar_excluye(recursos_nuevos):
-                                    continue
-
-                                evento_prueba=evento_elegido.copy()
-                                evento_prueba.recursos=evento_elegido.recursos+ recursos_nuevos
-
-                                ocupados=self.recursos_ocupados(evento_prueba,opcion)
-                                if ocupados:
-                                    print("No se pueden agregar los recursos")
-                                    print("Recursos ocupados en ese horario:")
-                                    for r in ocupados:
-                                        print("-", r)
-                                    continue
-                            
-                                else:
-                                    evento_elegido.recursos.extend(recursos_nuevos)
-                                    evento_elegido.recursos=list(set(evento_elegido.recursos))
-                                    print("Recursos agregados correctamente")  
-                         
+                            self.agregar_recursos_a_evento(evento_elegido,opcion) 
                         elif opcion2==opcion_volver:
                             break
                         else:
