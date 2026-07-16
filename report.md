@@ -52,5 +52,14 @@ Para operar el sistema, se deben seguir estos pasos:
  - El sistema cargará automáticamente los registros existentes desde data.json.
  - A través de menús numéricos, se pueden realizar las operaciones de gestión. Cada acción (creación o edición) desencadena una serie de verificaciones automáticas de disponibilidad y compatibilidad de recursos.
 
+**Limitaciones conocidas**
+
+-El buscador de huecos solo explora las proximas 48 horas en intervalos de 30 minutos,lo que puede no ser suficiente para eventos muy largos o con poca disponibilidad y compatibilidad de recursos.
+-El sistema no permite eventos con duración superior a 24 horas(aunque si permiten cruzar la medianoche).
+-El archivo "data.json" debe estar en el mismo directorio que el programa;si noo existe,se crea autómaticamente ,pero si está dañado se reinicia desde cero
+-La interfaz es de consola ,por lo que no hay validación visual de calendario ni arrastre de eventos.
+
+
+
 **Conclusiones**
 Se ha logrado un sistema que no solo registra información,sino que aplica lógica de negocio para prevenir fallos logísticos .La rigurosidad en la validación de dependencias de recursos y la gestión avanzada del tiempo posicionan a Eventum Center como una herramienta útil para la administración profesional de centros de convenciones.
