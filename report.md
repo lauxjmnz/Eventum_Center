@@ -1,10 +1,10 @@
 **Introducción y Dominio del Sistema**
 
-Eventum Center se ha diseñado como una solución informática avanzada para la administración de centros de convenciones, donde la coordinación de espacios, equipos técnicos y personal especializado es crítica. El sistema actúa como un regulador lógico que impide errores operativos comunes, tales como el uso incompatible de tecnología en áreas no aptas.
+Eventum Center se ha diseñado como una solución informática avanzada para la administración de centros de convenciones, donde la coordinación de espacios, equipos técnicos y personal especializado es importante. El sistema actúa como un regulador lógico que impide errores operativos comunes, tales como el uso incompatible de tecnología en áreas no aptas.
 
 El dominio gestionado abarca tres ejes fundamentales:
  -Eventos: Actividades de diversa índole (conferencias, grabaciones, talleres) que requieren una ventana temporal específica.
-(No se permiten eventos de varios dias )
+(Se admiten eventos que crucen la medianoche,siempre que la duracion total no supere las 24 horas. La fecha de fin se calcula automáticamente sumando un dia si la hora final es anterior o igual a la hora de inicio  )
 
  - Recursos: Un inventario jerarquizado que incluye espacios físicos (Sala Central, Área Abierta), hardware (Sistemas de Sonido, Cámaras) y capital humano (Técnicos de Sonido, Moderadores).
 
@@ -53,4 +53,4 @@ Para operar el sistema, se deben seguir estos pasos:
  - A través de menús numéricos, se pueden realizar las operaciones de gestión. Cada acción (creación o edición) desencadena una serie de verificaciones automáticas de disponibilidad y compatibilidad de recursos.
 
 **Conclusiones**
-Se ha logrado un sistema que no solo registra información, sino que aplica inteligencia de negocio para prevenir fallos logísticos. La rigurosidad en la validación de dependencias de recursos y la gestión avanzada del tiempo posicionan a Eventum Center como una herramienta de alta fiabilidad para la administración profesional de centros de convenciones.
+Se ha logrado un sistema que no solo registra información,sino que aplica lógica de negocio para prevenir fallos logísticos .La rigurosidad en la validación de dependencias de recursos y la gestión avanzada del tiempo posicionan a Eventum Center como una herramienta útil para la administración profesional de centros de convenciones.
